@@ -23,4 +23,4 @@ Finally, start the server with:
 
     make test.byte
 
-When you see `ocsigenserver` on screen, connect to <http://localhost:8080/lookup/%E3%84%92%E3%84%A7> to confirm that the installation has worked.
+When you see `ocsigenserver` on screen, connect to <http://localhost:8080/lookup/trs/si> and <http://localhost:8080/lookup/zhuyin/ㄒㄧ> to confirm that the installation has worked.
