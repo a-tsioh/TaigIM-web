@@ -1,0 +1,9 @@
+S .
+
+B ./_server
+B ./_client
+
+PKG pcre
+PKG ulex
+PKG eliom.server
+PKG eliom.client
