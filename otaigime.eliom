@@ -16,11 +16,18 @@ let main_p =
     let open Html5.D in
     p ~a:[a_class ["plop"];to_attrib (Xml.string_attrib "contenteditable" "true")] [pcdata "ceci est un debut de texte"]
 
-let imageservice =
+let zhuyin_service =
   Eliom_registration.String.register_service
-    ~path:["lookup"]
+    ~path:["lookup";"zhuyin"]
     ~get_params:(Eliom_parameter.suffix (Eliom_parameter.string "input"))
-    (fun input () -> Lwt.return ((TaigIME.format_table (TaigIME.request input)), "text/plain"))
+    (fun input () -> Lwt.return ((TaigIME.format_table (TaigIME.request_zhuyin input)), "text/plain"))
+
+let trs_service =
+  Eliom_registration.String.register_service
+    ~path:["lookup";"trs"]
+    ~get_params:(Eliom_parameter.suffix (Eliom_parameter.string "input"))
+    (fun input () -> Lwt.return ((TaigIME.format_table (TaigIME.request_trs input)), "text/plain"))
+
 
 let () =
   Otaigime_app.register
