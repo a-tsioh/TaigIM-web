@@ -189,7 +189,7 @@ module TRS = struct
              let parsed = syllable_of_trs t in
              List.fold_left 
                (fun (d,s) syl -> match syl with 
-                  | Syl syl -> (None, (Syl {syl with separateur=d})::s)
+                  | Syl syl -> (None, (Syl {syl with separateur=d; ton=None})::s)
                   | Other x -> (None, (Other ((string_of_option d)^x))::s)
                )
                (delim,syls)
