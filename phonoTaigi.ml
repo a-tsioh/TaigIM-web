@@ -92,7 +92,7 @@ module TRS = struct
         ("m", Pcre.regexp ~iflags "m");
         ("ĩ", Pcre.regexp ~iflags "inn");
         ("ẽ", Pcre.regexp ~iflags "enn");
-        ("ɔ̃", Pcre.regexp ~iflags "oonn");
+        ("ɔ̃", Pcre.regexp ~iflags "onn");
         ("ɔ", Pcre.regexp ~iflags "oo");
       ] in
       List.fold_left
