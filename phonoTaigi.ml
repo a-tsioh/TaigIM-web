@@ -145,8 +145,10 @@ module TRS = struct
     let open Pcre in
     let aux s =
       let i = s.(1) in
-      let m = s.(2) in
-      let f = s.(3) in
+      let (m,f) = match s.(3) with
+        | Some "nn" -> (Some ((string_of_option s.(2)) ^ "nn"),None)
+        | _ -> (s.(2),s.(3))
+      in 
       convert {separateur=None; initial=i; mediane=m; finale=f; ton=None}
     in
     let ton,syl = extract_tone s in 
@@ -230,9 +232,6 @@ module TRS = struct
 end
 
 module Bopomo = struct
-
-
-
   let zhuyin_re = Pcre.regexp ~iflags "(--?)?(ㄅ|ㄆ|ㄇ|ㄉ|ㄊ|ㄋ|ㄌ|ㄍ|ㄎ|ㄏ|ㄐ|ㄑ|ㄒ|ㄓ|ㄔ|ㄕ|ㄖ|ㄗ|ㄘ|ㄙ)?([ㄚㄛㄜㄩㄨㄝㄧㄟ]+|ㄥ|ㄇ)([ㄇㄣㄥㄅㄉㄍㄏ])?"
 
 
