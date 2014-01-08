@@ -62,6 +62,7 @@ module TRS = struct
          | 0x302 -> (Some "5", acc)
          | 0x304 -> (Some "7", acc)
          | 0x30d -> (Some "8", acc)
+         | 0x30c -> (Some "9", acc)
          | letter -> (t, letter::acc) )
       (Some "1",[])
       a 
@@ -86,13 +87,13 @@ module TRS = struct
     let convert_voyels med =
       let rules = [
         ("ŋ", Pcre.regexp ~iflags "ng");
-        ("ɔ", Pcre.regexp ~iflags "oo");
         ("ũ", Pcre.regexp ~iflags "unn");
         ("ã", Pcre.regexp ~iflags "ann");
         ("m", Pcre.regexp ~iflags "m");
         ("ĩ", Pcre.regexp ~iflags "inn");
         ("ẽ", Pcre.regexp ~iflags "enn");
-        ("ɔ̃", Pcre.regexp ~iflags "onn");
+        ("ɔ̃", Pcre.regexp ~iflags "oonn");
+        ("ɔ", Pcre.regexp ~iflags "oo");
       ] in
       List.fold_left
         (fun s (ipa,trs) -> Pcre.replace  ~rex:trs ~templ:ipa s)
@@ -191,7 +192,7 @@ module TRS = struct
              let parsed = syllable_of_trs t in
              List.fold_left 
                (fun (d,s) syl -> match syl with 
-                  | Syl syl -> (None, (Syl {syl with separateur=d; ton=None})::s)
+                  | Syl syl -> (None, (Syl {syl with separateur=d})::s)
                   | Other x -> (None, (Other ((string_of_option d)^x))::s)
                )
                (delim,syls)
