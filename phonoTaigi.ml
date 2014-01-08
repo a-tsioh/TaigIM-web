@@ -73,9 +73,9 @@ module TRS = struct
     let open Pcre in
     let rex = regexp ~flags "(ts|tsh|s|j)i" in
     let trs = replace_first ~rex ~templ:"$1ii" trs in
-    let rex = regexp ~flags "^o([^ -o])" in
+    let rex = regexp ~flags "^o([nptk])" in
     let trs = replace ~rex ~templ:"oo$1" trs in
-    let rex = regexp ~flags "([^o])o([^ -])" in
+    let rex = regexp ~flags "([^o])o([nptk])" in
     replace ~rex ~templ:"$1oo$2" trs
 
 
@@ -265,7 +265,7 @@ let convert_syl s =
       ("e", Pcre.regexp ~iflags "ㆤ");
       ("i", Pcre.regexp ~iflags "ㄧ");
       ("m", Pcre.regexp ~iflags "ㄇ");
-      ("o", Pcre.regexp ~iflags "ㄛ");
+      ("o", Pcre.regexp ~iflags "ㄜ");
       ("ĩ", Pcre.regexp ~iflags "ㆪ");
       ("u", Pcre.regexp ~iflags "ㄨ");
       ("õ", Pcre.regexp ~iflags "ㆧ");

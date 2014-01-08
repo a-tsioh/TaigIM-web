@@ -14,7 +14,12 @@ let iflags = Pcre.cflags Utils.flags
 let string_of_word w =
   String.concat "-" 
     (List.map 
-       (fun s -> PhonoTaigi.IPA.ipa_of_syl ~sep:"." {s with ton=Some "_"}) 
+       (fun s -> 
+          let s' = match s.ton with
+            | None -> {s with ton=Some "_"}
+            | _ -> s
+          in
+          PhonoTaigi.IPA.ipa_of_syl ~sep:"." s') 
        w
     )
 
@@ -60,8 +65,13 @@ let vocalize syl =
   | _ -> None
 
 
+let remove_tone syl = 
+  match syl.ton with
+  | Some _ -> Some (1,{syl with ton=None})
+  | _ -> None
+
 let func_list = 
-  vocalize::(List.map 
+  remove_tone::vocalize::(List.map 
                (fun t -> change_entering_tone t)
                [Some "t"; Some "p" ;Some "ʔ"; Some "k"])
 
