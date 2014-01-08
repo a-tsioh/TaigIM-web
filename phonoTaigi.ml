@@ -233,7 +233,7 @@ module Bopomo = struct
 
 
 
-  let zhuyin_re = Pcre.regexp ~iflags "(--?)?(ㄅ|ㄆ|ㄇ|ㄉ|ㄊ|ㄋ|ㄌ|ㄍ|ㄎ|ㄏ|ㄐ|ㄑ|ㄒ|ㄓ|ㄔ|ㄕ|ㄖ|ㄗ|ㄘ|ㄙ)?([ㄚㄛㄜㄩㄨㄝㄧㄟ]+|ㄞ|ㄠ|ㄡ|ㄢ|ㄣ|ㄤ|ㄥ|ㄦ|ㄤ|ㄇ)([ㄇㄥㄅㄉㄍㄏ])?"
+  let zhuyin_re = Pcre.regexp ~iflags "(--?)?(ㄅ|ㄆ|ㄇ|ㄉ|ㄊ|ㄋ|ㄌ|ㄍ|ㄎ|ㄏ|ㄐ|ㄑ|ㄒ|ㄓ|ㄔ|ㄕ|ㄖ|ㄗ|ㄘ|ㄙ)?([ㄚㄛㄜㄩㄨㄝㄧㄟ]+|ㄥ|ㄇ)([ㄇㄣㄥㄅㄉㄍㄏ])?"
 
 
 let opt_apply f = function
@@ -366,10 +366,11 @@ let syllable_of_zhuyin input =
     Not_found -> [Other input] 
 
 let parse s =
+  let s = normalise_zhuyin s in
   let new_syl s =
     let sep = s.(1) in
     let i = s.(2) in
-    let m = opt_apply normalise_zhuyin (s.(3)) in
+    let m = s.(3) in
     let f = s.(4) in
     convert_syl {separateur=sep; initial=i; mediane=m; finale=f; ton=None}
   in
