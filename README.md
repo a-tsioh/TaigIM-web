@@ -13,4 +13,14 @@ Prepare an opam environment:
 Then install the `pgocaml` and `eliom` packages:
 
     opam repository add opamocsigen http://ocsigen.org/opam
-    opam install pgocaml eliom ulex uunf ocp-indent merlin
+    opam install dbm pgocaml eliom ulex uunf ocp-indent merlin
+
+...and import the PostgreSQL database (OSX binary is available on <http://postgresapp.com/>):
+
+    bzcat pgsqlDB.dump.bz2 | psql
+
+Finally, start the server with:
+
+    make test.byte
+
+When you see `ocsigenserver` on screen, connect to <http://localhost:8080/lookup/trs/si> and <http://localhost:8080/lookup/zhuyin/ㄒㄧ> to confirm that the installation has worked.
