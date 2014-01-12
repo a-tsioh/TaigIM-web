@@ -112,20 +112,21 @@ let edit_list_of_parsing_results pr =
   in
   (0,aux pr)
 
-let request parse_func input =
-  let dbh = PGOCaml.connect () in
+let dbh = PGOCaml.connect ()
+
+let request parse_func n input =
   let init = edit_list_of_parsing_results (parse_func input) in
   let rec extend acc n = 
     if n < 0 then acc
     else extend (get_more_edits acc func_list) (n-1) 
   in
-  get_candidates dbh (extend [init] 3)
+  get_candidates dbh (extend [init] n)
 
-let request_trs =
-  request PhonoTaigi.TRS.parse
+let request_trs ?(n=3) =
+  request PhonoTaigi.TRS.parse n
 
-let request_zhuyin =
-request PhonoTaigi.Bopomo.parse
+let request_zhuyin ?(n=3) =
+request PhonoTaigi.Bopomo.parse n
     
 
 let format_table rows =
