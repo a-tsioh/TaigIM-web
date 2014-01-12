@@ -133,3 +133,11 @@ let format_table rows =
     (List.map
        (fun (c,w,l) -> String.concat " | " (w::l))
        rows)
+
+let format_list rows =
+  String.concat "|"
+    (List.map
+       (fun (_,_,l) -> String.concat "|" l)
+       rows)
+
+

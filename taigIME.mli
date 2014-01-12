@@ -13,5 +13,6 @@ val get_candidates : (string, bool) Hashtbl.t PGOCaml.t -> w_edit list -> row li
 val request_zhuyin : string -> row list
 val request_trs : string -> row list
 val format_table : row list -> string
+val format_list : row list -> string
  
 
