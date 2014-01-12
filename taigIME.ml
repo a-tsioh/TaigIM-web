@@ -135,9 +135,17 @@ let format_table rows =
        rows)
 
 let format_list rows =
-  String.concat "|"
-    (List.map
-       (fun (_,_,l) -> String.concat "|" l)
-       rows)
+  let results = List.fold_left
+      (fun acc (_,_,l) ->
+        List.fold_left 
+          (fun acc' w -> 
+             if List.mem w acc' then acc'
+             else w::acc' )
+          acc
+          l)
+      []
+      rows
+  in 
+  String.concat "|" results
 
 
