@@ -117,15 +117,15 @@ let dbh = PGOCaml.connect ()
 let request parse_func n input =
   let init = edit_list_of_parsing_results (parse_func input) in
   let rec extend acc n = 
-    if n < 0 then acc
+    if n < 1 then acc
     else extend (get_more_edits acc func_list) (n-1) 
   in
   get_candidates dbh (extend [init] n)
 
-let request_trs ?(n=3) =
+let request_trs ?(n=0) =
   request PhonoTaigi.TRS.parse n
 
-let request_zhuyin ?(n=3) =
+let request_zhuyin ?(n=0) =
 request PhonoTaigi.Bopomo.parse n
     
 
@@ -137,16 +137,22 @@ let format_table rows =
 
 let format_list rows =
   let results = List.fold_left
-      (fun acc (_,_,l) ->
-        List.fold_left 
+      (fun acc (i,str,l) ->
+         ("{\"sound\":\""^str^"\",\n"^
+          "\"edits\":"^(string_of_int i)^",\n"^
+          "\"hanji\":[\""^(String.concat "\",\"" l)^"\"]}")::acc)
+
+
+(*        List.fold_left 
           (fun acc' w -> 
              if List.mem w acc' then acc'
              else w::acc' )
           acc
-          l)
+          l)*)
       []
       rows
   in 
-  String.concat "|" results
-
+  "["^
+  (String.concat ",\n" results)^
+  "]"
 
