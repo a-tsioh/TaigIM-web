@@ -112,8 +112,9 @@ let edit_list_of_parsing_results pr =
   in
   (0,aux pr)
 
+let dbh = PGOCaml.connect ()
+
 let request parse_func input =
-  let dbh = PGOCaml.connect () in
   let init = edit_list_of_parsing_results (parse_func input) in
   let rec extend acc n = 
     if n < 0 then acc
