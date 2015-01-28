@@ -16,8 +16,8 @@ let so_of_io = function
   | Some i -> Some (string_of_int i)
   | None -> None
 
-let string_of_option = function
-  | None -> ""
+let string_of_option ?(none="") = function
+  | None -> none
   | Some s -> s
 
 let unique l =

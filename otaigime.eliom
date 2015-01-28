@@ -22,6 +22,14 @@ let zhuyin_service =
     ~get_params:(Eliom_parameter.suffix (Eliom_parameter.string "input"))
     (fun input () -> Lwt.return ((TaigIME.format_list (TaigIME.request_zhuyin input)), "text/plain"))
 
+let zhuyin_fuzzy_service =
+  let open Eliom_parameter in
+  Eliom_registration.String.register_service
+    ~path:["lookup";"fuzzy";"zhuyin"]
+    ~get_params:(suffix (int "n" ** string "input"))
+    (fun (n,input) () -> Lwt.return ((TaigIME.format_list (TaigIME.request_zhuyin ~n input)), "text/plain"))
+
+
 let trs_service =
   Eliom_registration.String.register_service
     ~path:["lookup";"trs"]

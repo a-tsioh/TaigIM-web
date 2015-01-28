@@ -14,11 +14,31 @@ type parsing_result = Syl of syl | Other of string
 module IPA = struct
 
   let ipa_of_syl ?(sep="") syl =
-    let i = string_of_option syl.initial in
-    let m = string_of_option syl.mediane in
-    let f = string_of_option syl.finale in
-    let t = string_of_option syl.ton in
-    String.concat sep [i;m;f;t]
+    let i = string_of_option ~none:"Ø" syl.initial in
+    let m = string_of_option ~none:"Ø" syl.mediane in
+    let f = string_of_option ~none:"Ø" syl.finale in
+    let t = string_of_option ~none:"Ø" syl.ton in
+    let (finale,ton_entrant) = match f with
+      |  "t" ->  ("Ø","t")
+      |  "ʔ" ->  ("Ø","ʔ")
+      |  "k" ->  ("Ø","k")
+      |  "p" ->  ("Ø","p")
+      |  "ŋ" ->  ("ŋ","Ø")
+      |  "m" ->  ("m","Ø")
+      |  "n" ->  ("n","Ø")
+      | _ -> ("Ø","Ø")
+    in
+    let t = if ton_entrant <> "Ø" && t = "1" 
+      then "4"
+      else t
+    in 
+    let m = match Utf8.compute_len m 0 (String.length m)  with
+      | 0 -> "ØØØ"
+      | 1 -> "ØØ"^m
+      | 2 -> "Ø"^m
+      | _ -> m
+    in
+    String.concat sep [i;m;finale;ton_entrant;t]
 
   let ipa_of_parsing_result r =
     let rec aux l = match l with
@@ -75,7 +95,7 @@ module TRS = struct
     let trs = replace_first ~rex ~templ:"$1ii" trs in
     let rex = regexp ~flags "^o([nptk])" in
     let trs = replace ~rex ~templ:"oo$1" trs in
-    let rex = regexp ~flags "([^o])o([nptk])" in
+    let rex = regexp ~flags "([^o])o([mnptk])" in
     replace ~rex ~templ:"$1oo$2" trs
 
 
@@ -83,7 +103,8 @@ module TRS = struct
 
 
 
-  let convert s =
+
+  let convert_syl s =
     let convert_voyels med =
       let rules = [
         ("ŋ", Pcre.regexp ~iflags "ng");
@@ -92,7 +113,7 @@ module TRS = struct
         ("m", Pcre.regexp ~iflags "m");
         ("ĩ", Pcre.regexp ~iflags "inn");
         ("ẽ", Pcre.regexp ~iflags "enn");
-        ("ɔ̃", Pcre.regexp ~iflags "onn");
+        ("ɔ̃", Pcre.regexp ~iflags "oonn");
         ("ɔ", Pcre.regexp ~iflags "oo");
       ] in
       List.fold_left
@@ -101,6 +122,10 @@ module TRS = struct
         rules
     in
     let i = match s.initial with
+      |  Some init -> Some (String.lowercase init)
+      | None -> None
+    in
+    let i = match i with
       | Some "tsi" -> Some "tɕ"
       | Some "ji" -> Some "ʑ"
       | Some "ts" -> Some "ts"
@@ -141,6 +166,10 @@ module TRS = struct
     {initial=i;mediane=m;finale=f;ton=s.ton;separateur=s.separateur}
 
 
+  let convert w =
+    List.map
+      convert_syl
+      w
 
   let syllable_of_trs s =
     let open Pcre in
@@ -150,8 +179,9 @@ module TRS = struct
         | Some "nn" -> (Some ((string_of_option s.(2)) ^ "nn"),None)
         | _ -> (s.(2),s.(3))
       in 
-      convert {separateur=None; initial=i; mediane=m; finale=f; ton=None}
+      convert_syl {separateur=None; initial=i; mediane=m; finale=f; ton=None}
     in
+    (*let s = String.lowercase s in*)
     let ton,syl = extract_tone s in 
     let syl = expand syl in 
     try 
@@ -203,9 +233,36 @@ module TRS = struct
          | Group  _ -> raise (Invalid_argument "pb de regex, should not happen")
       )
       (None,[])
-      (full_split ~rex:re  s)
+      (full_split  ~rex:re  s)
   |> snd |> List.rev 
-
+(*
+  let parse s =
+    let new_syl s =
+      let sep = s.(1) in
+      let i = s.(2) in
+      let m = s.(3) in
+      let f = s.(4) in
+      convert_syl {separateur=sep; initial=i; mediane=m; finale=f; ton=None}
+    in
+    let open Pcre in
+    let rec find_next s acc =
+      try
+        let sub = exec ~rex:trs_re_imf s in
+      let (start,finish) = Pcre.get_substring_ofs sub 0 in 
+      let acc' = 
+        if start > 0 then (Other (String.sub s 0 start))::acc
+        else acc
+      in
+      let len = String.length s in
+      let syl = Syl (new_syl (Pcre.get_opt_substrings sub)) in
+      if len = finish 
+      then List.rev (syl::acc')
+      else find_next (String.sub s finish (len-finish)) (syl::acc')
+    with
+    | Not_found -> List.rev ((Other s)::acc)
+  in
+  find_next s []
+*)
 
   let string_of_syl ?(sep="") syl =
     let i = match syl.initial with
@@ -268,7 +325,6 @@ let convert_syl s =
       ("o", Pcre.regexp ~iflags "ㄜ");
       ("ĩ", Pcre.regexp ~iflags "ㆪ");
       ("u", Pcre.regexp ~iflags "ㄨ");
-      ("õ", Pcre.regexp ~iflags "ㆧ");
       ("ẽ", Pcre.regexp ~iflags "ㆥ");
       ("ɔ̃", Pcre.regexp ~iflags "ㆧ");
     ] in

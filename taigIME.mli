@@ -10,8 +10,8 @@ val func_list : edit_func list
 val edit_list_of_parsing_results : PhonoTaigi.parsing_result list -> w_edit
 val get_more_edits : w_edit list -> edit_func list -> w_edit list
 val get_candidates : (string, bool) Hashtbl.t PGOCaml.t -> w_edit list -> row list
-val request_zhuyin : string -> row list
-val request_trs : string -> row list
+val request_zhuyin : ?n:int -> string -> row list
+val request_trs : ?n:int -> string -> row list
 val format_table : row list -> string
 val format_list : row list -> string
  
